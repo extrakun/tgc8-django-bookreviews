@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -30,6 +32,14 @@ class Book(models.Model):
 
     tags = models.ManyToManyField('Tag')
 
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+
+    authors = models.ManyToManyField('Author')
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    cover = CloudinaryField()
+
     # toString function -- it allows us to state the string representation
     # of a class
     def __str__(self):
@@ -57,6 +67,13 @@ class Author(models.Model):
 
 class Tag(models.Model):
     title = models.CharField(blank=False, max_length=255)
+
+    def __str__(self):
+        return self.title
+
+
+class Category(models.Model):
+    title = models.CharField(blank=False, max_length=100)
 
     def __str__(self):
         return self.title

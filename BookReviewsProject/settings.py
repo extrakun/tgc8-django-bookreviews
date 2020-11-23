@@ -12,10 +12,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -39,7 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'books',
-    'reviews'
+    'reviews',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'crispy_forms',
+    'cloudinary'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +66,10 @@ ROOT_URLCONF = 'BookReviewsProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'templates', 'allauth')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -102,6 +114,37 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+# the user have to login with username and email
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+
+# all new users must provide an email address
+ACCOUNT_EMAIL_REQUIRED = True
+
+# sends an email to the users email for verification
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+# will prompt the user to enter their email twice
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+
+# LOGIN_URL is where the login page is at
+LOGIN_URL = "/accounts/login/"
+
+# which URL to go where the user has logged in successfully
+LOGIN_REDIRECT_URL = "/success"
+
+# tell Django to send the verification email to the console that
+# we can see the verification link
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -125,3 +168,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
+
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+
+# tell Django crispy form to format our forms using bootstrap v4 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CLOUDINARY = {
+    'cloud_name': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'api_key': os.environ.get('CLOUDINARY_API_KEY'),
+    'api_secret': os.environ.get('CLOUDINARY_API_SECRET')
+}
+
+
